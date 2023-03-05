@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>My Strong Stats</title>
+    </head>
+    <body>
+        <div id="cavases" style="width: 800px">
+        </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>            
+
+            $.getJSON("https://raw.githubusercontent.com/dmzoneill/strongapp-api/main/sample/stats.json", function(jd) {
+                $.each(jd, function(k, v) {
+                    console.log(k);
+
+                    if(Object.keys(v).length < 5) return;
+
+                    const canvas = document.createElement("canvas");
+                    canvas.setAttribute("id", k);
+                    canvas.setAttribute("style", "width: 800vw; height: 400vw");
+                    $("#cavases").append(canvas);
+                    const ctx = document.getElementById(k);
+
+                    let weight_vals = [];
+                    let volume_vals = [];
+                    let rep_vals = [];
+
+                    $.each(v, function(ek, ev) {
+                        console.log(ev);
+                        volume_vals.push(ev["total_volume"]);
+                        weight_vals.push(ev["max_weight"]);
+                        rep_vals.push(ev["total_reps"]);                                             
+                    });
+
+                    let cjs = {
+                        type: 'line',
+                        data: {
+                            labels: Object.keys(v),
+                            datasets: [
+                                {
+                                    label: 'Max Weight',
+                                    yAxisID: 'A',
+                                    data: weight_vals
+                                }, {
+                                    label: 'Reps',
+                                    yAxisID: 'B',
+                                    data: rep_vals
+                                }, {
+                                    label: 'Volume',
+                                    yAxisID: 'C',
+                                    data: volume_vals
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: k
+                                }
+                            },
+                            scales: {
+                                A: {
+                                    id: 'A',
+                                    type: 'linear',
+                                    position: 'left',
+                                    display: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Max Weight',
+                                        color: '#3a9ce7',
+                                        font: {
+                                            family: 'Comic Sans MS',
+                                            size: 16,
+                                            weight: 'bold',
+                                            lineHeight: 1.2,
+                                        },
+                                        padding: {
+                                            top: 20, 
+                                            left: 0, 
+                                            right: 0, 
+                                            bottom: 0
+                                        }
+                                    }
+                                },
+                                B: {
+                                    id: 'A',
+                                    type: 'linear',
+                                    position: 'left',
+                                    display: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Reps',
+                                        color: '#fd5a87',
+                                        font: {
+                                            family: 'Comic Sans MS',
+                                            size: 16,
+                                            weight: 'bold',
+                                            lineHeight: 1.2,
+                                        },
+                                        padding: {
+                                            top: 20, 
+                                            left: 0, 
+                                            right: 0, 
+                                            bottom: 0
+                                        }
+                                    }
+                                },
+                                C: {
+                                    id: 'C',
+                                    type: 'linear',
+                                    position: 'right',
+                                    display: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Volume',
+                                        color: '#fea14d',
+                                        font: {
+                                            family: 'Comic Sans MS',
+                                            size: 16,
+                                            weight: 'bold',
+                                            lineHeight: 1.2,
+                                        },
+                                        padding: {
+                                            top: 20, 
+                                            left: 0, 
+                                            right: 0, 
+                                            bottom: 0
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    console.log(cjs);
+
+                    let ch = new Chart(ctx, cjs);
+                    ch.resize(800, 400);
+                });
+            });
+          
+            
+        </script>          
+    </body>
+</html>
