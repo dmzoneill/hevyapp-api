@@ -38,9 +38,9 @@ for X in wos:
                 max = set["weight_kg"] if set["weight_kg"] > max else max
 
         workout_exercises[exercise_title][index] = {}
-        workout_exercises[exercise_title][index]["volume"] = round(volume)
-        workout_exercises[exercise_title][index]["max"] = max
-        workout_exercises[exercise_title][index]["reps"] = reps
+        workout_exercises[exercise_title][index]["total_volume"] = round(volume)
+        workout_exercises[exercise_title][index]["max_weight"] = max
+        workout_exercises[exercise_title][index]["total_reps"] = reps
 
 
 names.sort()
