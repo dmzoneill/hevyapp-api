@@ -2,50 +2,55 @@ import json
 
 stats = {}
 
-workouts = open("workouts.json").read()
-workouts_obj = json.loads(workouts)
-sessions_obj = workouts_obj["results"]
+names = []
+workout_exercises = {}
+workout_time = {}
+workout_volume = {}
 
-for session in sessions_obj:
-    for exercise in session["parseSetGroups"]:
+wos = json.loads(open("workouts.json").read())
 
-        name = exercise["parseExercise"]["name"]
+for X in wos:
+    index = X["nth_workout"]
+    name = X["name"]
+    names.append(name.replace(" ", ""))
+    workout_time[index] = round((X["end_time"] - X["start_time"]) / 60)
+    workout_volume[index] = round(X["estimated_volume_kg"])
 
-        if name not in stats:
-            stats[name] = {}
+    for exercise in X["exercises"]:
+        exercise_title = exercise["title"]
 
-        date = exercise["createdAt"].split("T")[0]
+        if exercise_title not in workout_exercises.keys():
+            workout_exercises[exercise_title] = {}
 
-        if name not in stats:
-            stats[name] = {}
+        volume = 0
+        max = 0
+        reps = 0
 
-        if date not in stats[name]:
-            stats[name][date] = {}
-            stats[name][date]["total_volume"] = 0
-            stats[name][date]["total_reps"] = 0
-            stats[name][date]["max_weight"] = 0
-            stats[name][date]["average_weight"] = 0
-            average_count = 0
-            average = 0
+        for set in exercise["sets"]:
+            if set["weight_kg"] is not None and set["reps"] is not None:
+                volume += round(set["weight_kg"] * set["reps"])
+            else:
+                volume += 0
 
-            for set in exercise["parseSetsDictionary"]:
-                if set["isChecked"]:
-                    if "kilograms" in set and set["kilograms"] != 0:
-                        stats[name][date]["total_volume"] += set["reps"] * \
-                            set["kilograms"]
-                        stats[name][date]["total_reps"] += set["reps"]
-                        stats[name][date]["max_weight"] = set["kilograms"] if set["kilograms"] > stats[
-                            name][date]["max_weight"] else stats[name][date]["max_weight"]
-                        average_count += set["reps"]
-                        average += set["reps"] * set["kilograms"]
-            if average_count > 0:
-                stats[name][date]["average_weight"] = round(
-                    average / average_count)
+            reps += set["reps"] if set["reps"] is not None else 0
 
-        if stats[name][date]["total_volume"] == 0 or stats[name][date]["total_reps"] == 0:
-            del (stats[name][date])
+            if set["weight_kg"] is not None:
+                max = set["weight_kg"] if set["weight_kg"] > max else max
+
+        workout_exercises[exercise_title][index] = {}
+        workout_exercises[exercise_title][index]["volume"] = round(volume)
+        workout_exercises[exercise_title][index]["max"] = max
+        workout_exercises[exercise_title][index]["reps"] = reps
 
 
-save_file = open("stats.json", "w")
-save_file.write(json.dumps(stats))
-save_file.close()
+names.sort()
+
+stats = {
+    "workout_exercises": workout_exercises,
+    "workout_time": workout_time,
+    "workout_volume": workout_volume,
+}
+
+with open("stats.json", "w") as file1:
+    file1.write(json.dumps(stats))
+    file1.close()

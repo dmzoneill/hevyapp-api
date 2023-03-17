@@ -6,134 +6,97 @@ import sys
 import json
 
 
-class Strong:
+class Hevy:
     def __init__(self):
-        self.endpoint = "https://ws13.strongapp.co"
-        self.strong_username = os.environ.get('strong_username')
-        self.strong_password = os.environ.get('strong_password')
-        self.strong_device_uuid = os.environ.get('strong_device_uuid')
-        self.strong_application_id = os.environ.get('strong_application_id')
+        self.endpoint = "https://api.hevyapp.com"
+        self.hevy_username = os.getenv("hevy_username")
+        self.hevy_password = os.environ.get("hevy_password")
         self.request_no = 0
 
-        if self.strong_username is None:
+        if self.hevy_username is None:
             sys.exit(1)
 
-        if self.strong_password is None:
+        if self.hevy_password is None:
             sys.exit(2)
 
-        if self.strong_device_uuid is None:
-            sys.exit(3)
-
-        if self.strong_application_id is None:
-            sys.exit(4)
-
         self.headers = {
-            'Host': 'ws13.strongapp.co',
-            'x-parse-application-id': self.strong_application_id,
-            'x-parse-app-build-version': '257',
-            'x-parse-app-display-version': '2.7.9',
-            'x-parse-os-version': '13',
-            'user-agent': 'Parse Android SDK API Level 33',
-            'x-parse-installation-id': self.strong_device_uuid,
-            'content-type': 'application/json',
-            'pragma': 'no-cache',
-            'cache-control': 'no-cache'
+            "Accept": "application/json, text/plain, */*",
+            "Accept-Language": "en-GB,en-US;q=0.9,en;q=0.8",
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "Content-Type": "application/json",
+            "DNT": "1",
+            "Origin": "https://www.hevy.com",
+            "Pragma": "no-cache",
+            "Referer": "https://www.hevy.com/",
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Site": "cross-site",
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36",
+            "sec-ch-ua": '"Google Chrome";v="111", "Not(A:Brand";v="8", "Chromium";v="111"',
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": '"Linux"',
+            "x-api-key": "shelobs_hevy_web",
         }
-
 
     def WebRequest(self, method, query, data=None):
         self.request_no += 1
         print("==================" + str(self.request_no) + "===================")
 
         if method == "POST":
-            self.response = requests.post(self.endpoint + query, json=data, headers=self.headers)
+            self.response = requests.post(
+                self.endpoint + query, json=data, headers=self.headers
+            )
         else:
             self.response = requests.get(self.endpoint + query, headers=self.headers)
 
         data = dump.dump_all(self.response)
-        print(data.decode('utf-8'))
+        print(data.decode("utf-8"))
 
         print(self.response.status_code)
         pprint(self.response.text)
 
-
     def Login(self):
         data = {}
-        data["password"] = self.strong_password
-        data["username"] = self.strong_username
-        data["_method"] = "GET"
+        data["password"] = self.hevy_password
+        data["emailOrUsername"] = self.hevy_username
 
-        self.WebRequest("POST", "/parse/login", data)
+        self.WebRequest("POST", "/login", data)
 
-        js = self.response.json()
-        self.session_token = js["sessionToken"]
-        self.user_object_id = js["objectId"]
-
-        self.headers['x-parse-session-token'] = self.session_token
+        self.headers["x-api-key"] = "klean_kanteen_insulated"
+        self.headers["auth-token"] = self.response.json()["auth_token"]
 
     def GetUser(self):
-        self.WebRequest("GET", "/parse/classes/_User/" + self.user_object_id)
+        self.WebRequest("GET", "/account")
 
     def GetWorkouts(self):
-        where = {}
-        where["user"] = {}
-        where["user"]["__type"] = "Pointer"
-        where["user"]["className"] = "_User"
-        where["user"]["objectId"] = self.user_object_id
-        where["updatedAt"] = {}
-        where["updatedAt"]["$gt"] = {}
-        where["updatedAt"]["$gt"]["__type"] = "Date"
-        where["updatedAt"]["$gt"]["iso"] = "1970-01-01T00:00:00.000Z"
+        all_workouts = []
+        workouts = []
+        cache_file = "workouts.json"
 
-        data = {}
-        data["include"] = "parseOriginRoutine,parseRoutine,parseSetGroups.parseExercise"
-        data["limit"] = "200"
-        data["where"] = json.dumps(where).replace('"', '\"')
-        data["_method"] = "GET"
+        if os.path.isfile(cache_file):
+            with open(cache_file) as f:
+                return json.loads(f.read())
 
-        self.WebRequest("POST", "/parse/classes/ParseWorkout", data)
+        self.WebRequest("GET", "/workouts_batch/0")
+        workouts = self.response.json()
+        all_workouts += workouts
 
-        save_file = open("workouts.json", "w")
-        save_file.write(self.response.text)
-        save_file.close()
+        while len(workouts) == 20:
+            self.WebRequest("GET", "/workouts_batch/" + str(workouts[19]["index"]))
+            workouts = self.response.json()
+            all_workouts += workouts
 
-    def GetWorkOutsPerWeek(self):
-        where = {}
-        where["user"] = {}
-        where["user"]["__type"] = "Pointer"
-        where["user"]["className"] = "_User"
-        where["user"]["objectId"] = self.user_object_id
-
-        data = {}
-        data["_method"] = "GET"
-        data["where"] = json.dumps(where).replace('"', '\"')
-
-        self.WebRequest("POST", "/parse/classes/ParseWidget", data)
+        with open(cache_file, "w") as file1:
+            file1.write(json.dumps(all_workouts))
+            file1.close()
 
     def GetWorkOutsCount(self):
-        where = {}
-        where["user"] = {}
-        where["user"]["__type"] = "Pointer"
-        where["user"]["className"] = "_User"
-        where["user"]["objectId"] = self.user_object_id
-        where["updatedAt"] = {}
-        where["updatedAt"]["$gt"] = {}
-        where["updatedAt"]["$gt"]["__type"] = "Date"
-        where["updatedAt"]["$gt"]["iso"] = "1970-01-01T00:00:00.000Z"
-
-        data = {}
-        data["include"] = "parseOriginRoutine,parseRoutine,parseSetGroups.parseExercise"
-        data["limit"] = "0"
-        data["count"] = "1"
-        data["where"] = json.dumps(where).replace('"', '\"')
-        data["_method"] = "GET"
-
-        self.WebRequest("POST", "/parse/classes/ParseWorkout", data)
+        self.WebRequest("GET", "/workout_count")
 
 
-s = Strong()
+s = Hevy()
 s.Login()
 s.GetUser()
 s.GetWorkouts()
 s.GetWorkOutsCount()
-s.GetWorkOutsPerWeek()

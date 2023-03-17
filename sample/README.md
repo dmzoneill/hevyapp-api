@@ -1,4 +1,4 @@
-# strong-api
+# hevy-api
 
 ## Welcome
 
@@ -10,7 +10,7 @@
 
 ## You will need to define these:
 
-- export strong_device_uuid=$(uuidgen)
-- export strong_application_id=$(date | sha1sum | awk '{print $1}')
-- export strong_username="ddddddddddddddddd"
-- export strong_password="gggggggggggggggggg"
+- export hevy_device_uuid=$(uuidgen)
+- export hevy_application_id=$(date | sha1sum | awk '{print $1}')
+- export hevy_username="ddddddddddddddddd"
+- export hevy_password="gggggggggggggggggg"

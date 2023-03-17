@@ -8,7 +8,7 @@ import requests
 headers = {
     'accept': 'application/json, text/plain, */*',
     'x-api-key': 'klean_kanteen_insulated',
-    'auth-token': '73cbb807-yyyy-zzzz-xxxx-611e773c2b1b',
+    'auth-token': '.......-.....-....-....-.............',
     'Host': 'api.hevyapp.com',
     'User-Agent': 'okhttp/4.9.3',
     'Pragma': 'no-cache',

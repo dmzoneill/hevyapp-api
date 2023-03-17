@@ -3,43 +3,46 @@ import requests
 import os
 import sys
 
-strong_username = os.getenv('strong_username')
-strong_password = os.environ.get('strong_password')
-strong_device_uuid = os.environ.get('strong_device_uuid')
-strong_application_id = os.environ.get('strong_application_id')
+hevy_username = os.getenv("hevy_username")
+hevy_password = os.environ.get("hevy_password")
 
-if strong_username is None:
+if hevy_username is None:
     sys.exit(1)
 
-if strong_password is None:
+if hevy_password is None:
     sys.exit(2)
 
-if strong_device_uuid is None:
-    sys.exit(3)
-
-if strong_application_id is None:
-    sys.exit(4)
-
 headers = {
-    'Host': 'ws13.strongapp.co',
-    'x-parse-application-id': strong_application_id,
-    'x-parse-app-build-version': '257',
-    'x-parse-app-display-version': '2.7.9',
-    'x-parse-os-version': '13',
-    'user-agent': 'Parse Android SDK API Level 33',
-    'x-parse-installation-id': strong_device_uuid,
-    'content-type': 'application/json',
-    'pragma': 'no-cache',
-    'cache-control': 'no-cache'
+    "Accept": "application/json, text/plain, */*",
+    "Accept-Language": "en-GB,en-US;q=0.9,en;q=0.8",
+    "Cache-Control": "no-cache",
+    "Connection": "keep-alive",
+    "Content-Type": "application/json",
+    "DNT": "1",
+    "Origin": "https://www.hevy.com",
+    "Pragma": "no-cache",
+    "Referer": "https://www.hevy.com/",
+    "Sec-Fetch-Dest": "empty",
+    "Sec-Fetch-Mode": "cors",
+    "Sec-Fetch-Site": "cross-site",
+    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36",
+    "sec-ch-ua": '"Google Chrome";v="111", "Not(A:Brand";v="8", "Chromium";v="111"',
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": '"Linux"',
+    "x-api-key": "shelobs_hevy_web",
 }
 
-data = '{"password":"' + strong_password + '","username":"' + strong_username + '","_method":"GET"}'
-endpoint = "https://ws13.strongapp.co/parse/login"
+json_data = {
+    "emailOrUsername": hevy_username,
+    "password": hevy_password,
+}
 
-response = requests.post(endpoint, headers=headers, data=data)
+response = requests.post(
+    "https://api.hevyapp.com/login", headers=headers, json=json_data
+)
 
 pprint(headers)
-pprint(data)
+pprint(json_data)
 pprint(response.json())
 pprint(response.ok)
 pprint(response.status_code)
