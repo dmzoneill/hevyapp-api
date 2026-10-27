@@ -28,20 +28,20 @@
 - Android studio
 - [Charles proxy](https://www.charlesproxy.com/)
 - [apk-mitm](https://www.npmjs.com/package/apk-mitm/)
-- [com.hevy apk](https://m.apkpure.com/hevy-gym-log-workout-tracker/com.hevy/download)
+- [com.hevy apk](https://m.apkpure.com/hevy-gym-log-workout-tracker/com.hevy/download) <!-- codespell:ignore -->
 
 ### Setup
 
 1. Open Android studio
 2. Create an Android virtual device
 3. Boot the device
-4. Download the hevy app apk
+4. Download the hevy app apk <!-- codespell:ignore -->
 5. Download apk-mitm
 6. Patch the apk as described on [apk-mitm](https://www.npmjs.com/package/apk-mitm/)
 7. Install charles proxy
 8. Install the certificate and setup the proxy on the Android device as described here:
    <https://blog.logrocket.com/test-debug-android-apps-with-charles-web-proxy/>
 9. Using Android studio upload the patched APK to the Android device and then install it
-10. open hevy app and login
+10. open hevy app and login <!-- codespell:ignore -->
 
-Hevy should use the proxy with the previously installed certificate and in charles you can now see the decrypted https requests.
+Hevy should use the proxy with the previously installed certificate and in charles you can now see the decrypted https requests. <!-- codespell:ignore -->
