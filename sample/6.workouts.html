@@ -1,52 +1,39 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <!-- prettier-ignore -->
+  <head>
+    <title>My Hevy Stats</title><!-- codespell:ignore -->
+    <script
+      src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"
+      integrity="sha384-Ft/vb48LwsAEtgltj7o+6vtS2esTU9PCpDqcXs4OCVQFZu5BqprHtUCZ4kjK+bpE"
+      crossorigin="anonymous"
+    ></script>
+  </head>
 
-<head>
-    <title>My Hevy Stats</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js" integrity="sha384-Ft/vb48LwsAEtgltj7o+6vtS2esTU9PCpDqcXs4OCVQFZu5BqprHtUCZ4kjK+bpE" crossorigin="anonymous"></script>
-</head>
-
-<body>
-
+  <body>
     <table style="width: 800px" id="myTable">
-        <thead>
-            <th>
-                Short Id
-            </th>
-            <th>
-                Start Time
-            </th>
-            <th>
-                End Time
-            </th>
-            <th>
-                Name
-            </th>
-            <th>
-                Exercises
-            </th>
-            <th>
-                Total volume
-            </th>
-        </thead>
-        <tbody>
-
-        </tbody>
+      <thead>
+        <th>Short Id</th>
+        <th>Start Time</th>
+        <th>End Time</th>
+        <th>Name</th>
+        <th>Exercises</th>
+        <th>Total volume</th>
+      </thead>
+      <tbody></tbody>
     </table>
     <script>
+      var tbodyRef = $("tbody")[0];
 
-        var tbodyRef = $('tbody')[0];
-
-        $.getJSON("https://raw.githubusercontent.com/dmzoneill/hevyapp-api/main/sample/stats.json", function (jd) {
-            $.each(jd['workout_exercises'], function (k, v) {
-                console.log(k)
-                console.log(v)
-            });
-        });
-
-
+      $.getJSON(
+        "https://raw.githubusercontent.com/dmzoneill/hevyapp-api/main/sample/stats.json",
+        function (jd) {
+          $.each(jd["workout_exercises"], function (k, v) {
+            console.log(k);
+            console.log(v);
+          });
+        },
+      );
     </script>
-
-</body>
-
+  </body>
 </html>
